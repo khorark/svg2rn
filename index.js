@@ -17,7 +17,7 @@ if (!fs.existsSync(PATH_TO_COMPONENT_DIR)) fs.mkdirSync(PATH_TO_COMPONENT_DIR);
 // Helpers
 const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
 
-const writeSvgFile2Js = async ({ data, componentName, pathFileToMin, timeStart }) => {
+const writeSvgFile2Js = async ({ data, file, componentName, pathFileToMin, timeStart }) => {    
     const result = await svgr(data, CONFIG_SVGR,{ componentName, })
 
     fs.writeFile(pathFileToMin, result, err => {
@@ -50,9 +50,10 @@ files.forEach(file => {
     const pathFileToMin = `${PATH_TO_COMPONENT_DIR}/${componentName}.js`;
 
     const data = juice(svgData).replace('viewbox', 'viewBox');
-    
+
     const payload = {
         data,
+        file,
         componentName,
         pathFileToMin,
         timeStart
