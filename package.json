@@ -1,0 +1,25 @@
+{
+  "name": "svg2rn",
+  "version": "1.0.0",
+  "description": "Convert svg files to React class for use this files in you ReactNative project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "svg",
+    "react",
+    "reactNative"
+  ],
+  "bin": {
+    "svg2rn": "./index.js"
+  },
+  "author": "Khoroshikh Arkadiy",
+  "license": "MIT",
+  "dependencies": {
+    "@svgr/core": "4.1.0",
+    "@svgr/plugin-jsx": "4.1.0",
+    "@svgr/plugin-svgo": "4.0.3",
+    "juice": "4.2.3"
+  }
+}
