@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const fs = require('fs');
 const path = require('path');
 const { performance } = require('perf_hooks');
@@ -17,7 +19,7 @@ if (!fs.existsSync(PATH_TO_COMPONENT_DIR)) fs.mkdirSync(PATH_TO_COMPONENT_DIR);
 // Helpers
 const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
 
-const writeSvgFile2Js = async ({ data, file, componentName, pathFileToMin, timeStart }) => {    
+const writeSvgFile2Js = async ({ data, file, componentName, pathFileToMin, timeStart }) => {
     const result = await svgr(data, CONFIG_SVGR,{ componentName, })
 
     fs.writeFile(pathFileToMin, result, err => {
@@ -38,14 +40,14 @@ const files = fs.readdirSync('./');
 files.forEach(file => {
     if (path.extname(file) !== '.svg') return false;
     const timeStart = performance.now();
-  
+
     // Work with files
     const svgData = fs.readFileSync(`./${file}`, { encoding: 'utf-8' });
 
     const componentName = `${capitalize(path.basename(
         file,
         '.svg'
-      ))}Icon`
+    ))}Icon`
 
     const pathFileToMin = `${PATH_TO_COMPONENT_DIR}/${componentName}.js`;
 
@@ -58,6 +60,6 @@ files.forEach(file => {
         pathFileToMin,
         timeStart
     }
-    
+
     writeSvgFile2Js(payload)
 })
