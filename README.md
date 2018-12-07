@@ -17,4 +17,11 @@ svg2rn
 
 After, will be created folder Component, where exist JS file.
 
+If you have choice output folder, please select your folder write argument -o, --output and name you path.
+```
+svg2rn -o /home/user/icon
+```
+
+Folder Component will not be created auto.
+
 ## Licence MIT.
