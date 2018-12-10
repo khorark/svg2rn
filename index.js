@@ -5,12 +5,12 @@ const path = require("path");
 const { performance } = require("perf_hooks");
 const juice = require("juice");
 const svgr = require("@svgr/core").default;
-const SVGO = require('svgo');
-const svg2jsx = require('@balajmarius/svg2jsx')
+const SVGO = require("svgo");
+const svg2jsx = require("@balajmarius/svg2jsx");
 const program = require("commander");
 
 const { version } = require("./package.json");
-const { config } = require('./configSvgo.js');
+const { config } = require("./configSvgo.js");
 
 // Constants
 const PATH_TO_COMPONENT_DIR = `./components`;
@@ -19,12 +19,9 @@ const CONFIG_SVGR = {
   plugins: ["@svgr/plugin-jsx", "@svgr/plugin-prettier"]
 };
 
-// Config SVGO
-const svgo = new SVGO(config);
-
 program
   .version(version)
-  .option("-o --output [outpath]", "Select output folder")
+  .option("-o --output [outpath]", "select output folder")
   .on("--help", () => {
     console.log("\nExamples:");
     console.log(`$ svg2rn`);
@@ -41,16 +38,29 @@ const writeSvgFile2Js = async ({
   file,
   componentName,
   pathFileToMin,
-  timeStart
+  timeStart,
 }) => {
+  // Config SVGO
+  let svgo = new SVGO(config);
   // Optimize svg
-  const svgOptimize = await svgo.optimize(svg);
+  let svgOptimize = await svgo.optimize(svg);
+
   // Transform svg class to inner style
   const svgClassToStyleAttrs = juice(svgOptimize.data, { xmlMode: true });
+
+  // Remove class element
+  svgo = new SVGO({
+    plugins: [
+      {
+        removeAttrs: { attrs: "(class)" }
+      }
+    ]
+  });
+  svgOptimize = await svgo.optimize(svgClassToStyleAttrs);
   // Convert svg to jsx format
-  const jsx = await svg2jsx(svgClassToStyleAttrs);
+  const jsx = await svg2jsx(svgOptimize.data);
   // Convert jsx to React Native format
-  const result = await svgr(jsx, CONFIG_SVGR, { componentName });  
+  const result = await svgr(jsx, CONFIG_SVGR, { componentName });
   // Write file
   fs.writeFile(pathFileToMin, result, err => {
     if (err) console.error(err);
@@ -64,7 +74,8 @@ const writeSvgFile2Js = async ({
 };
 
 const main = () => {
-  outPath = program.output || PATH_TO_COMPONENT_DIR;
+  const outPath = program.output || PATH_TO_COMPONENT_DIR;
+
   // Check dirs
   if (!fs.existsSync(outPath)) fs.mkdirSync(outPath);
 
@@ -81,13 +92,13 @@ const main = () => {
     const componentName = `${capitalize(path.basename(file, ".svg"))}Icon`;
 
     const pathFileToMin = `${outPath}/${componentName}.js`;
-   
+
     const payload = {
       svg,
       file,
       componentName,
       pathFileToMin,
-      timeStart
+      timeStart,
     };
 
     writeSvgFile2Js(payload);

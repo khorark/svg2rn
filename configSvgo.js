@@ -41,10 +41,10 @@ exports.config = {
     },
     ,
     {
-      removeStyleElement: true
+      removeStyleElement: false
     },
     {
-      removeAttrs: { attrs: "(id|class|data-name|data-old_color|data-original)" }
+      removeAttrs: { attrs: "(id|data-name|data-old_color|data-original)" }
     },
     {
       removeViewBox: false
