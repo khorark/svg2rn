@@ -23,6 +23,7 @@
     "@svgr/plugin-prettier": "^4.0.3",
     "commander": "2.19.0",
     "juice": "4.2.3",
-    "svgo": "^1.1.1"
+    "svgo": "^1.1.1",
+    "svgson": "^3.0.0"
   }
 }

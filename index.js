@@ -8,6 +8,7 @@ const svgr = require("@svgr/core").default;
 const SVGO = require("svgo");
 const svg2jsx = require("@balajmarius/svg2jsx");
 const program = require("commander");
+const svgson = require('svgson')
 
 const { version } = require("./package.json");
 const { config } = require("./configSvgo.js");
@@ -33,6 +34,19 @@ program
 // Helpers
 const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
 
+const addAttrsWidthHeightToSvg = async svg => {
+  const res = await svgson.parse(svg);
+
+  if (res && res.attributes && res.attributes.viewBox) {
+    const viewBox = res.attributes.viewBox.split(' ');
+    res.attributes.width = viewBox[2];
+    res.attributes.height = viewBox[3];
+  }
+
+  return svgson.stringify(res)
+};
+
+// Write new svg file
 const writeSvgFile2Js = async ({
   svg,
   file,
@@ -42,8 +56,9 @@ const writeSvgFile2Js = async ({
 }) => {
   // Config SVGO
   let svgo = new SVGO(config);
+  const svgWH = await addAttrsWidthHeightToSvg(svg);
   // Optimize svg
-  let svgOptimize = await svgo.optimize(svg);
+  let svgOptimize = await svgo.optimize(svgWH);
   // Transform svg class to inner style
   const svgClassToStyleAttrs = juice(svgOptimize.data, { xmlMode: true });
   // Remove class element
@@ -51,7 +66,10 @@ const writeSvgFile2Js = async ({
     plugins: [
       {
         removeAttrs: { attrs: "(class)" }
-      }
+      },
+      {
+        removeViewBox: false
+      },
     ]
   });
   svgOptimize = await svgo.optimize(svgClassToStyleAttrs);
