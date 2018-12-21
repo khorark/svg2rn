@@ -44,10 +44,8 @@ const writeSvgFile2Js = async ({
   let svgo = new SVGO(config);
   // Optimize svg
   let svgOptimize = await svgo.optimize(svg);
-
   // Transform svg class to inner style
   const svgClassToStyleAttrs = juice(svgOptimize.data, { xmlMode: true });
-
   // Remove class element
   svgo = new SVGO({
     plugins: [
@@ -88,9 +86,7 @@ const main = () => {
 
     // Work with files
     const svg = fs.readFileSync(`./${file}`, { encoding: "utf-8" });
-
-    const componentName = `${capitalize(path.basename(file, ".svg"))}Icon`;
-
+    const componentName = `${capitalize(path.basename(file, ".svg").trim())}Icon`;
     const pathFileToMin = `${outPath}/${componentName}.js`;
 
     const payload = {
