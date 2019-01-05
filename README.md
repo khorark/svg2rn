@@ -30,7 +30,7 @@ Folder Component will not be created auto.
 
 Svg file before convert
 
-```
+```xml
 <svg xmlns="http://www.w3.org/2000/svg" 
     xmlns:xlink="http://www.w3.org/1999/xlink" width="25" height="23" viewBox="0 0 25 23">
     <defs>
@@ -46,7 +46,7 @@ Svg file before convert
 
 Svg component after convert
 
-```
+```jsx
 import React from "react";
 import Svg, { Use } from "react-native-svg";
 
@@ -70,14 +70,15 @@ export default StarIcon;
 
 Usage
 
-```
+```jsx
 import StarIcon from 'StarIcon'
 
-////
+// We resize image to width=50 and height=46
+// Attrs fill,width,height and other don't required
 
 <StarIcon fill='#fff' width={50} height={46}>
 
-////
+//
 ```
 
 ## Licence MIT.
