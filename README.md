@@ -12,7 +12,7 @@ If you find bag, please create ISSUE.
 
 ## Usage
 
-<span style='color: red; font-weight: bold;'>:exclamation: IMPORTANT :exclamation: </span> In project your need install [```react-native-svg```](https://github.com/react-native-community/react-native-svg) package for support svg component :exclamation: 
+:exclamation: **IMPORTANT** :exclamation: In project your need install [```react-native-svg```](https://github.com/react-native-community/react-native-svg) package for support svg component :exclamation: 
 
 
 To run the script go to the folder with you svg files and run command in console
