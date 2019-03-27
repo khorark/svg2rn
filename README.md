@@ -29,6 +29,14 @@ svg2rn -o /home/user/icon
 
 Folder Component will not be created auto.
 
+## Expo support
+
+For support expo, please use flag --expo. 
+
+```
+svg2rn --expo 
+```
+
 ## Example
 
 Svg file before convert
