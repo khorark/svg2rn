@@ -140,7 +140,7 @@ const main = () => {
 
     // Work with files
     const svg = fs.readFileSync(`./${file}`, { encoding: "utf-8" });
-    const componentName = `${capitalize(path.basename(file, ".svg").trim())}Icon`;
+    const componentName = capitalize(path.basename(file, ".svg").trim());
     const pathFileToMin = `${outPath}/${componentName}.js`;
 
     const payload = {
