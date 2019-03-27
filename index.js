@@ -23,10 +23,12 @@ const CONFIG_SVGR = {
 program
   .version(version)
   .option("-o --output [outpath]", "select output folder")
+  .option("--expo", "transform to expo format")
   .on("--help", () => {
     console.log("\nExamples:");
     console.log(`$ svg2rn`);
     console.log(`$ svg2rn -o /home/user/icon`);
+    console.log(`$ svg2rn --expo`);
     console.log("");
   })
   .parse(process.argv);
@@ -76,7 +78,13 @@ const writeSvgFile2Js = async ({
   // Convert svg to jsx format
   const jsx = await svg2jsx(svgOptimize.data);
   // Convert jsx to React Native format
-  const result = await svgr(jsx, CONFIG_SVGR, { componentName });
+  let result = await svgr(jsx, CONFIG_SVGR, { componentName });
+
+  // Check support expo
+  if (program.expo) {
+    result = trasformToExpo(result);
+  }
+
   // Write file
   fs.writeFile(pathFileToMin, result, err => {
     if (err) console.error(err);
@@ -87,6 +95,34 @@ const writeSvgFile2Js = async ({
       console.log(`Done in ${timeFinish} ms!`);
     }
   });
+};
+
+const trasformToExpo = jsx => {
+  const jsxArr = jsx.split(';\n');
+  jsxArr[1] = `import { Svg } from 'expo'`
+  let data = jsxArr.join(';\n');
+
+  data = data.replace(/<(\w+)/g, str => {
+    let newStr = '';
+    if (str !== '<Svg') {
+      newStr = str.replace('<', '<Svg.')
+    } else {
+      newStr = str;
+    }
+
+    return newStr;
+  })
+  
+  return data.replace(/<\/(\w+)/g, str => {
+    let newStr = '';
+    if (str !== '</Svg') {
+      newStr = str.replace('</', '</Svg.')
+    } else {
+      newStr = str;
+    }
+
+    return newStr;
+  })
 };
 
 const main = () => {
