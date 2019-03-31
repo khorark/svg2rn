@@ -24,6 +24,7 @@ program
   .version(version)
   .option("-o --output [outpath]", "select output folder")
   .option("--expo", "transform to expo format")
+  .option("--suffix", "append suffix icon for out files")
   .on("--help", () => {
     console.log("\nExamples:");
     console.log(`$ svg2rn`);
@@ -127,6 +128,7 @@ const trasformToExpo = jsx => {
 
 const main = () => {
   const outPath = program.output || PATH_TO_COMPONENT_DIR;
+  const haveSuffix = !!program.suffix;
 
   // Check dirs
   if (!fs.existsSync(outPath)) fs.mkdirSync(outPath);
@@ -140,7 +142,7 @@ const main = () => {
 
     // Work with files
     const svg = fs.readFileSync(`./${file}`, { encoding: "utf-8" });
-    const componentName = `${capitalize(path.basename(file, ".svg").trim())}Icon`;
+    const componentName = `${capitalize(path.basename(file, ".svg").trim())}${haveSuffix ? 'Icon' : ''}`;
     const pathFileToMin = `${outPath}/${componentName}.js`;
 
     const payload = {
