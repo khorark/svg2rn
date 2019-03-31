@@ -29,6 +29,12 @@ svg2rn -o /home/user/icon
 
 Folder Component will not be created auto.
 
+If you want to use a "Icon" suffix, add to the command params --suffix.
+
+```
+svg2rn --suffix
+```
+
 ## Expo support
 
 For support expo, please use flag --expo. 
