@@ -14,7 +14,7 @@ const { version } = require("./package.json");
 const { config } = require("./configSvgo.js");
 
 // Constants
-const PATH_TO_COMPONENT_DIR = `./components`;
+const PATH_TO_OUTPUT_DIR = `./components`;
 const CONFIG_SVGR = {
   native: true,
   plugins: ["@svgr/plugin-jsx", "@svgr/plugin-prettier"]
@@ -30,7 +30,8 @@ program
   .on("--help", () => {
     console.log("\nExamples:");
     console.log(`$ svg2rn`);
-    console.log(`$ svg2rn -o /home/user/icon`);
+    console.log(`$ svg2rn -i ./assets/svg/`);
+    console.log(`$ svg2rn -o /home/user/icon/`);
     console.log(`$ svg2rn --expo`);
     console.log(`$ svg2rn --ts`);
     console.log("");
@@ -53,13 +54,9 @@ const addAttrsWidthHeightToSvg = async svg => {
 };
 
 // Write new svg file
-const writeSvgFile2Js = async ({
-  svg,
-  file,
-  componentName,
-  pathFileToMin,
-  timeStart
-}) => {
+const writeSvgFile2Js = async (
+  { svg, componentName, destinationPath }, callback,
+) => {
   // Config SVGO
   let svgo = new SVGO(config);
   const svgWH = await addAttrsWidthHeightToSvg(svg);
@@ -95,14 +92,9 @@ const writeSvgFile2Js = async ({
   }
 
   // Write file
-  fs.writeFile(pathFileToMin, result, err => {
+  fs.writeFile(destinationPath, result, err => {
     if (err) console.error(err);
-    else {
-      const timeFinish = parseInt(performance.now() - timeStart);
-      console.log("");
-      console.log(`${file} => ${componentName}.${program.ts ? "tsx" : "js"}`);
-      console.log(`Done in ${timeFinish} ms!`);
-    }
+    else callback();
   });
 };
 
@@ -152,8 +144,8 @@ const transformToTs = jsx => {
 };
 
 const main = () => {
-  const inPath = program.input || __dirname;
-  const outPath = program.output || PATH_TO_COMPONENT_DIR;
+  const inPath = path.resolve(program.input || __dirname);
+  const outPath = path.resolve(program.output || PATH_TO_OUTPUT_DIR);
   const haveSuffix = !!program.suffix;
 
   // Check dirs
@@ -167,23 +159,19 @@ const main = () => {
     const timeStart = performance.now();
 
     // Work with files
-    const svg = fs.readFileSync(`${inPath}/${file}`, { encoding: "utf-8" });
-    const componentName = `${capitalize(path.basename(file, ".svg").trim())}${
-      haveSuffix ? "Icon" : ""
-    }`;
-    const pathFileToMin = `${outPath}/${componentName}.${
-      program.ts ? "tsx" : "js"
-    }`;
+    const sourcePath = path.join(inPath, file);
+    const componentName = `${capitalize(path.basename(file, ".svg").trim())}${haveSuffix ? 'Icon' : ''}`;
+    const destinationPath = path.join(outPath, `${componentName}.${program.ts ? "tsx" : "js"}`);
 
-    const payload = {
-      svg,
-      file,
-      componentName,
-      pathFileToMin,
-      timeStart
-    };
+    const svg = fs.readFileSync(sourcePath, { encoding: "utf-8" });
+    const payload = { svg, componentName, destinationPath };
 
-    writeSvgFile2Js(payload);
+    writeSvgFile2Js(payload, () => {
+      const timeFinish = parseInt(performance.now() - timeStart);
+      console.log("");
+      console.log(`${sourcePath}: => ${destinationPath}`);
+      console.log(`Done in ${timeFinish} ms!`);
+    });
   });
 };
 

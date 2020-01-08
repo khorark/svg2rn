@@ -22,9 +22,14 @@ svg2rn
 
 After, will be created folder Component, where exist JS file.
 
-If you have choice output folder, please select your folder write argument -o, --output and name you path.
+For select output folder, configured by setting -o, --output and name you path.
 ```
 svg2rn -o /home/user/icon
+```
+
+For select custom input directory, configured by setting -i or --input. For example:
+```
+svg2rn -i assets/uncompiled -o assets/icons
 ```
 
 Folder Component will not be created auto.
