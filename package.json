@@ -1,6 +1,6 @@
 {
   "name": "svg2rn",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "Convert svg files to React class for use this files in you ReactNative project",
   "main": "index.js",
   "scripts": {
