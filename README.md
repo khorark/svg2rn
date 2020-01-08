@@ -48,6 +48,14 @@ For support expo, please use flag --expo.
 svg2rn --expo 
 ```
 
+## TypeScript support
+
+For support typescript, please use flag --ts. 
+
+```
+svg2rn --ts 
+```
+
 ## Example
 
 Svg file before convert
