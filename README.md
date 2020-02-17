@@ -106,9 +106,9 @@ import StarIcon from 'StarIcon'
 // We resize image to width=50 and height=46
 // Attrs fill,width,height and other don't required
 
-<StarIcon fill='#fff' width={50} height={46}>
+<StarIcon fill='#fff' width={50} height={46} />
 
-//
+// your code here
 ```
 
 ## Licence MIT
