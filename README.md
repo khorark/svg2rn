@@ -8,7 +8,7 @@ Convert svg files to React class for use this files in your ReactNative project
 npm install -g svg2rn
 ```
 
-If you find bag, please create ISSUE.
+If you find bug, please create ISSUE.
 
 ## Usage
 
@@ -111,4 +111,4 @@ import StarIcon from 'StarIcon'
 //
 ```
 
-## Licence MIT.
+## Licence MIT
