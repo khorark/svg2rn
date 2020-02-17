@@ -59,7 +59,7 @@ const addAttrsWidthHeightToSvg = async svg => {
 
 // Write new svg file
 const writeSvgFile2Js = async (
-  { svg, componentName, destinationPath },
+  { svg, componentName, destinationPath, file },
   callback
 ) => {
   try {
@@ -104,7 +104,7 @@ const writeSvgFile2Js = async (
       else callback();
     });
   } catch (e) {
-    console.warn(`Error! Parced file ${destinationPath} with error - ${e}`);
+    console.warn(`Error! Parced file ${file} with error - ${e}`);
   }
 };
 
@@ -180,7 +180,7 @@ const main = () => {
 
     const svg = fs.readFileSync(sourcePath, { encoding: "utf-8" });
 
-    const payload = { svg, componentName, destinationPath };
+    const payload = { svg, componentName, destinationPath, file };
 
     writeSvgFile2Js(payload, () => {
       const timeFinish = parseInt(performance.now() - timeStart);
