@@ -1,5 +1,6 @@
 node_modules/
 *.svg
 .idea
+test_svg
 components/
 testImages/

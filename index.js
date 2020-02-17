@@ -42,60 +42,70 @@ program
 const capitalize = word => word.charAt(0).toUpperCase() + word.slice(1);
 
 const addAttrsWidthHeightToSvg = async svg => {
-  const res = await svgson.parse(svg);
+  try {
+    const res = await svgson.parse(svg);
 
-  if (res && res.attributes && res.attributes.viewBox) {
-    const viewBox = res.attributes.viewBox.split(" ");
-    res.attributes.width = viewBox[2];
-    res.attributes.height = viewBox[3];
+    if (res && res.attributes && res.attributes.viewBox) {
+      const viewBox = res.attributes.viewBox.split(" ");
+      res.attributes.width = viewBox[2];
+      res.attributes.height = viewBox[3];
+    }
+
+    return svgson.stringify(res);
+  } catch (e) {
+    throw new Error(e);
   }
-
-  return svgson.stringify(res);
 };
 
 // Write new svg file
 const writeSvgFile2Js = async (
-  { svg, componentName, destinationPath }, callback,
+  { svg, componentName, destinationPath },
+  callback
 ) => {
-  // Config SVGO
-  let svgo = new SVGO(config);
-  const svgWH = await addAttrsWidthHeightToSvg(svg);
-  // Optimize svg
-  let svgOptimize = await svgo.optimize(svgWH);
-  // Transform svg class to inner style
-  const svgClassToStyleAttrs = juice(svgOptimize.data, { xmlMode: true });
-  // Remove class element
-  svgo = new SVGO({
-    plugins: [
-      {
-        removeAttrs: { attrs: "(class)" }
-      },
-      {
-        removeViewBox: false
-      }
-    ]
-  });
-  svgOptimize = await svgo.optimize(svgClassToStyleAttrs);
-  // Convert svg to jsx format
-  const jsx = await svg2jsx(svgOptimize.data);
-  // Convert jsx to React Native format
-  let result = await svgr(jsx, CONFIG_SVGR, { componentName });
+  try {
+    // Config SVGO
+    let svgo = new SVGO(config);
+    const svgWH = await addAttrsWidthHeightToSvg(svg);
+    // console.log('true => ', true);
+    // Optimize svg
+    let svgOptimize = await svgo.optimize(svgWH);
+    // Transform svg class to inner style
+    const svgClassToStyleAttrs = juice(svgOptimize.data, { xmlMode: true });
+    // Remove class element
+    svgo = new SVGO({
+      plugins: [
+        {
+          removeAttrs: { attrs: "(class)" }
+        },
+        {
+          removeViewBox: false
+        }
+      ]
+    });
+    svgOptimize = await svgo.optimize(svgClassToStyleAttrs);
+    // Convert svg to jsx format
+    const jsx = await svg2jsx(svgOptimize.data);
+    // Convert jsx to React Native format
+    let result = await svgr(jsx, CONFIG_SVGR, { componentName });
 
-  // Check support expo
-  if (program.expo) {
-    result = trasformToExpo(result);
-  } 
-  
-  // Check support typescript
-  if (program.ts) {
-    result = transformToTs(result);
+    // Check support expo
+    if (program.expo) {
+      result = trasformToExpo(result);
+    }
+
+    // Check support typescript
+    if (program.ts) {
+      result = transformToTs(result);
+    }
+
+    // Write file
+    fs.writeFile(destinationPath, result, err => {
+      if (err) console.error(err);
+      else callback();
+    });
+  } catch (e) {
+    console.warn(`Error! Parced file ${destinationPath} with error - ${e}`);
   }
-
-  // Write file
-  fs.writeFile(destinationPath, result, err => {
-    if (err) console.error(err);
-    else callback();
-  });
 };
 
 const trasformToExpo = jsx => {
@@ -136,9 +146,9 @@ const transformToTs = jsx => {
   } else {
     const res = regexpImportPropsWithExt.exec(jsx);
     if (!res[0]) return jsx;
-  
+
     const data = jsx.slice(0, res.index) + ", SvgProps" + jsx.slice(res.index);
-  
+
     return data.replace(regexpProps, "= (props: SvgProps) =");
   }
 };
@@ -160,10 +170,16 @@ const main = () => {
 
     // Work with files
     const sourcePath = path.join(inPath, file);
-    const componentName = `${capitalize(path.basename(file, ".svg").trim())}${haveSuffix ? 'Icon' : ''}`;
-    const destinationPath = path.join(outPath, `${componentName}.${program.ts ? "tsx" : "js"}`);
+    const componentName = `${capitalize(path.basename(file, ".svg").trim())}${
+      haveSuffix ? "Icon" : ""
+    }`.replace(/-/g, "_");
+    const destinationPath = path.join(
+      outPath,
+      `${componentName}.${program.ts ? "tsx" : "js"}`
+    );
 
     const svg = fs.readFileSync(sourcePath, { encoding: "utf-8" });
+
     const payload = { svg, componentName, destinationPath };
 
     writeSvgFile2Js(payload, () => {
